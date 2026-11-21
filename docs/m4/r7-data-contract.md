@@ -86,9 +86,9 @@ Severity may be adjusted later according to the violation type and risk policy.
 
 | Component             | Status          |
 | --------------------- | --------------- |
-| R7 detection logic    | Not implemented |
-| R7 unit tests         | Not implemented |
+| R7 detection logic    | Implemented     |
+| R7 unit tests         | Passed          |
 | Data contract         | Proposed        |
 | Schema registry       | Not implemented |
 | Ingestion validation  | Not implemented |
-| Simulator integration | Not implemented |
+| Simulator integration | Implemented     |

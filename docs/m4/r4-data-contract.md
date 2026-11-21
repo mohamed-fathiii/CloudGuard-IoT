@@ -118,7 +118,7 @@ R4 must not generate a finding based on an invalid measurement. The ingestion la
 | R4 unit tests              | Passed          |
 | Metadata contract          | Proposed        |
 | MQTT ingestion measurement | Not implemented |
-| Simulator integration      | Not implemented |
-| End-to-end R4 test         | Pending         |
+| Simulator integration      | Implemented     |
+| End-to-end R4 test         | Passed          |
 
 **Important:** Passing unit tests confirms the rule's current logic. It does not confirm that payload sizes are measured or supplied securely in the live ingestion pipeline.

@@ -64,8 +64,8 @@ High.
 
 | Component             | Status          |
 | --------------------- | --------------- |
-| R6 detection logic    | Not implemented |
-| R6 unit tests         | Not implemented |
+| R6 detection logic    | Implemented     |
+| R6 unit tests         | Passed          |
 | Data contract         | Proposed        |
 | MQTT ACL integration  | Not implemented |
-| Simulator integration | Not implemented |
+| Simulator integration | Implemented     |

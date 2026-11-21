@@ -61,8 +61,8 @@ High.
 
 | Component             | Status          |
 | --------------------- | --------------- |
-| R5 detection logic    | Not implemented |
-| R5 unit tests         | Not implemented |
+| R5 detection logic    | Implemented     |
+| R5 unit tests         | Passed          |
 | Data contract         | Proposed        |
 | MQTT integration      | Not implemented |
-| Simulator integration | Not implemented |
+| Simulator integration | Implemented     |

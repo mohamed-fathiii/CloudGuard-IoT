@@ -39,5 +39,5 @@ It MUST NOT be accepted directly from device-supplied metadata.
 
 ## Status
 
-Proposed contract.
-Authentication integration and simulator support are not yet implemented.
+Proposed ingestion contract. Detection logic, unit tests and simulator support are implemented;
+trusted authentication/broker integration is not implemented.
