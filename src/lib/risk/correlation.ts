@@ -223,6 +223,12 @@ export class IncidentStore {
   ingest(inputs: CorrelatedEvent[]): SecurityIncident[] {
     const incoming = correlateEvents(inputs, this.config);
     const affected: SecurityIncident[] = [];
+    const correlationIds = new Set(
+      inputs
+        .filter((input) => input.findings.length > 0)
+        .map((input) => correlationId(input.event))
+        .filter((id): id is string => id !== undefined)
+    );
 
     for (const incident of incoming) {
       const existing = this.incidents.get(incident.incidentId);
@@ -255,6 +261,10 @@ export class IncidentStore {
       }
 
       const severity = highestSeverity(findings);
+      const extraReasons = [...correlationIds]
+        .filter((id) => !existing.correlationReasons.some((reason) => reason.includes(id)))
+        .map((id) => `Events share correlationId ${id}.`);
+
       const merged: SecurityIncident = {
         ...existing,
         updatedAt:
@@ -270,6 +280,7 @@ export class IncidentStore {
           ...incident.correlationReasons.filter(
             (reason) => !existing.correlationReasons.includes(reason)
           ),
+          ...extraReasons,
         ],
       };
       this.incidents.set(existing.incidentId, merged);

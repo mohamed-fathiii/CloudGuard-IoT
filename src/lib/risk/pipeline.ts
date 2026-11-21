@@ -133,7 +133,13 @@ export class DetectionPipeline {
       });
     }
 
-    const risk = calculateRiskScore(detection.findings, now);
+    // Rules stamp findings with wall-clock time; score against the event time
+    // so replayed/deterministic scenarios do not decay into zero risk.
+    const findings = detection.findings.map((finding) => ({
+      ...finding,
+      detectedAt: event.occurredAt,
+    }));
+    const risk = calculateRiskScore(findings, now);
     const ai = this.ai
       ? await this.ai.assess({
           deviceId: event.sourceId,
