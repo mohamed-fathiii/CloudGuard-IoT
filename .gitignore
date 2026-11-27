@@ -1,0 +1,38 @@
+# ===== أسرار — الحاجات دي لو اترفعت الحساب كله يبقى مكشوف =====
+.env
+.env.local
+.env*.local
+*.pem
+*.key
+*.p12
+cloudguard-bastion-key.pem
+aws-credentials*
+*.csv
+
+# ===== dependencies =====
+node_modules/
+.pnpm-store/
+
+# ===== Next.js =====
+.next/
+out/
+build/
+dist/
+next-env.d.ts
+
+# ===== logs / OS =====
+*.log
+npm-debug.log*
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# ===== IDE =====
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# ===== TypeScript =====
+*.tsbuildinfo
+
+# ملاحظة: فولدر drizzle/ (الـ migrations) لازم يترفع — هو تاريخ الـ schema

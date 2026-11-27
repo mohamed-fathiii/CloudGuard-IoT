@@ -1,0 +1,51 @@
+# ================================================================
+#  cloudguard-frontend.service — systemd unit
+# ================================================================
+#  الـ Frontend (M3) على 127.0.0.1:3100 — nginx هو اللي بيوصل له.
+#  الـ repo بيقول `next start -p 3100`، وده نفس البورت هنا.
+#
+#  التسطيب:
+#    sudo cp cloudguard-frontend.service /etc/systemd/system/
+#    sudo systemctl daemon-reload
+#    sudo systemctl enable --now cloudguard-frontend
+# ================================================================
+
+[Unit]
+Description=CloudGuard IoT — Frontend (Next.js)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+
+WorkingDirectory=/home/ubuntu/CloudGuard-IoT/Frontend
+
+Environment=NODE_ENV=production
+Environment=PORT=3100
+
+# المسار نسبي — الـ API بيتخدم من نفس nginx تحت /api/v1
+Environment=NEXT_PUBLIC_API_BASE_URL=/api/v1
+Environment=NEXT_PUBLIC_USE_MOCK_DATA=0
+
+# مهم: الـ Frontend يسمع محلي فقط
+ExecStart=/usr/bin/node node_modules/next/dist/bin/next start -p 3100 -H 127.0.0.1
+
+Restart=always
+RestartSec=5
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=cloudguard-frontend
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/ubuntu/CloudGuard-IoT/Frontend/.next
+
+MemoryMax=512M
+
+[Install]
+WantedBy=multi-user.target

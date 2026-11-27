@@ -1,0 +1,68 @@
+# ================================================================
+#  cloudguard-api.service — systemd unit
+# ================================================================
+#  الغرض: تشغيل الـ Backend (M2) على نفس EC2 اللي شغال عليه الـ Frontend.
+#  الـ Backend بيسمع على 127.0.0.1:3000 — nginx هو اللي بيوصل له.
+#  كده البورت مش مكشوف للإنترنت مباشرة.
+#
+#  التسطيب:
+#    sudo cp cloudguard-api.service /etc/systemd/system/
+#    sudo systemctl daemon-reload
+#    sudo systemctl enable --now cloudguard-api
+#    sudo systemctl status cloudguard-api
+#
+#  اللوج:
+#    sudo journalctl -u cloudguard-api -f
+# ================================================================
+
+[Unit]
+Description=CloudGuard IoT — M2 Backend API (Next.js)
+Documentation=https://github.com/mohamed-fathiii/CloudGuard-IoT
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+
+# مسار المشروع على الـ EC2 — عدّله لو مختلف
+WorkingDirectory=/home/ubuntu/CloudGuard-IoT/Backend
+
+# .env فيه DATABASE_URL — بيتقرأ من Next.js تلقائياً
+Environment=NODE_ENV=production
+Environment=PORT=3000
+
+# البورت محلي فقط — nginx هو الواجهة
+Environment=HOSTNAME=127.0.0.1
+
+ExecStart=/usr/bin/node node_modules/next/dist/bin/next start -p 3000 -H 127.0.0.1
+
+Restart=always
+RestartSec=5
+
+# إعادة تشغيل نظيفة عند فشل الـ DB أو الـ tunnel
+StartLimitBurst=5
+StartLimitIntervalSec=60
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=cloudguard-api
+
+# ── تحصين أساسي ──
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/ubuntu/CloudGuard-IoT/Backend/.next
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+
+# حدود موارد بسيطة (الـ EC2 صغير)
+MemoryMax=1G
+CPUQuota=150%
+
+[Install]
+WantedBy=multi-user.target

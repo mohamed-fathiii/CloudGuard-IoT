@@ -1,0 +1,42 @@
+{
+  "name": "cloudguard-iot",
+  "version": "1.0.0-M2",
+  "private": true,
+  "description": "CloudGuard IoT — M2: Cloud Database & Backend (mirrors Database-Design/Physical-Schema.docx)",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "db:check": "node --env-file=.env scripts/healthcheck.mjs",
+    "db:push": "drizzle-kit push --force",
+    "db:generate": "drizzle-kit generate",
+    "db:studio": "drizzle-kit studio",
+    "db:clean": "node --env-file=.env scripts/reconcile.mjs",
+    "db:seed": "node --env-file=.env --import tsx src/db/seed.ts",
+    "db:smoke": "node --env-file=.env scripts/smoke.mjs",
+    "db:sql": "node --env-file=.env scripts/run-sql.mjs",
+    "db:export": "node --env-file=.env scripts/export-csv.mjs"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.4",
+    "next": "^15.1.0",
+    "postgres": "^3.4.5",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "dotenv": "^16.4.7",
+    "drizzle-kit": "^0.31.11",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=20.6"
+  }
+}
