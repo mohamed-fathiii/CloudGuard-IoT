@@ -118,21 +118,36 @@ try {
             values ('SYSTEM', 'smoke', 'SMOKE_TEST', 'AUDIT_LOG', ${randomUUID()}, '{}'::jsonb)`;
   ok("audit_log insert");
 
-  /* 12) cascade: حذف الحادث يحذف incident_event */
-  await sql`delete from incident where incident_id = ${ids.incident}`;
-  const [{ n }] = await sql`select count(*)::int as n from incident_event where incident_id = ${ids.incident}`;
+  /* 12) RESTRICT على response_action → incident:
+         الحادث مايتحذفش وهو عنده إجراءات. ده القيد اللي بيحمي الأدلة.
+         (المتوقع: الحذف يترفض) */
+  try {
+    await sql`delete from incident where incident_id = ${ids.incident}`;
+    bad("fk_response_action_incident (RESTRICT) مش شغال");
+  } catch { ok("ON DELETE RESTRICT يمنع حذف حادث له إجراءات استجابة"); }
+
+  /* 13) CASCADE: نستخدم حادث تاني بدون إجراءات — عشان RESTRICT ميمنعش الاختبار */
+  const cascadeIncident = randomUUID();
+  await sql`insert into incident (incident_id, title, severity, status)
+            values (${cascadeIncident}, ${T + " cascade"}, 'LOW', 'OPEN')`;
+  await sql`insert into incident_event (incident_id, event_id, linked_by)
+            values (${cascadeIncident}, ${ids.event}, 'smoke')`;
+  await sql`delete from incident where incident_id = ${cascadeIncident}`;
+  const [{ n }] = await sql`select count(*)::int as n from incident_event where incident_id = ${cascadeIncident}`;
   n === 0 ? ok("ON DELETE CASCADE (incident → incident_event)") : bad("CASCADE مش شغال");
 
-  /* 13) restrict: حذف الجهاز مرفوض لأن فيه أحداث */
+  /* 14) RESTRICT على security_event → device */
   try {
     await sql`delete from device where device_id = ${ids.device}`;
     bad("fk_security_event_device (RESTRICT) مش شغال");
   } catch { ok("ON DELETE RESTRICT يمنع حذف جهاز له أحداث"); }
 
-  /* تنظيف */
+  /* تنظيف — الترتيب مهم: الأبناء قبل الآباء */
   console.log("\n→ تنضيف...");
   await sql`delete from audit_log where actor_id = 'smoke'`;
-  await sql`delete from response_action where action_id = ${ids.action}`;
+  /* response_action لازم يتشال قبل incident لأنه RESTRICT */
+  await sql`delete from response_action where incident_id = ${ids.incident}`;
+  await sql`delete from incident where incident_id = ${ids.incident}`;
   await sql`delete from risk_assessment where assessment_id = ${ids.assessment}`;
   await sql`delete from security_event where title like ${T + "%"}`;
   await sql`delete from cloud_resource where provider_resource_id = ${T + "_arn"}`;
