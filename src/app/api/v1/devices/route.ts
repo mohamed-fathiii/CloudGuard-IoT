@@ -68,7 +68,7 @@ export const GET = withErrorHandling(async (req: NextRequest) => {
     filters.push(sql`coalesce((
       select max(ra.risk_score) from risk_assessment ra
       join security_event se on se.event_id = ra.event_id
-      where se.device_id = ${device.deviceId}
+      where se.device_id = ${device}.${device.deviceId}
     ), 0) between ${min} and ${max}`);
   }
 
@@ -112,13 +112,13 @@ export const GET = withErrorHandling(async (req: NextRequest) => {
         select max(ra.risk_score)
         from risk_assessment ra
         join security_event se on se.event_id = ra.event_id
-        where se.device_id = ${device.deviceId}
+        where se.device_id = ${device}.${device.deviceId}
       ), 0)::int`,
       incidentCount: sql<number>`(
         select count(distinct ie.incident_id)::int
         from incident_event ie
         join security_event se2 on se2.event_id = ie.event_id
-        where se2.device_id = ${device.deviceId}
+        where se2.device_id = ${device}.${device.deviceId}
       )`,
     })
     .from(device)
